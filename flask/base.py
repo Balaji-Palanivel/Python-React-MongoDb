@@ -1,4 +1,3 @@
-
 from flask import Flask,render_template
 from flask_pymongo import PyMongo
 from flask import jsonify,request
@@ -10,7 +9,7 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://127.0.0.1:27017/database_1"
 mongo = PyMongo(app)
 all_users = mongo.db.collection_3
-
+filter_status = 'false'
 
 @app.route("/",methods=['GET'])
 def get_details():    
@@ -26,26 +25,33 @@ def get_details():
         
     
 def home_page():
+    global filter_status
     x = all_users.find()
     y = dumps(x) 
     authors = json.loads(y)
+    filter_status = 'false'
     return authors    
 
 def sort_Asc():
-    x = all_users.find().sort("name",1)
-    y = dumps(x) 
-    authors = json.loads(y)
-    print("Sort Asc called..........")
-    return authors
+    if filter_status == 'true':
+        return (sorted(filterd_1, key=lambda i: (i['name']),reverse=False))
+    elif filter_status == 'false':
+        x = all_users.find().sort("name",1)
+        y = dumps(x) 
+        authors = json.loads(y)
+        return authors
 
 def sort_Dsc():
-    x = all_users.find().sort("name",-1)
-    y = dumps(x) 
-    authors = json.loads(y)
-    print("Sort Dsc called..........")
-    return authors
+    if filter_status == 'true':
+        return (sorted(filterd_1, key=lambda i: (i['name']),reverse=True))
+    elif filter_status == 'false':
+        x = all_users.find().sort("name",-1)
+        y = dumps(x) 
+        authors = json.loads(y)
+        return authors
 
 def filter(name):
+    global filterd_1,filter_status
     x = all_users.find()
     y = dumps(list(x), indent = 2) 
     authors = json.loads(y)
@@ -55,22 +61,22 @@ def filter(name):
             z.append(x)
     a = dumps(z, indent = 2) 
     b = json.loads(a)
-    print("Filter fun  called..........")
+    filterd_1,filter_status = b, 'true'
     if request.args.get('sort') == 'asc':
       return (sorted(b, key=lambda i: (i['name']),reverse=False))
     elif request.args.get('sort') == 'dsc':
        return (sorted(b, key=lambda i: (i['name']),reverse=True))
     
 
-@app.route("/add",methods=['POST'])
+@app.route("/add",methods=['GET','POST'])
 def find_id():
     req = request.get_json()   
     NAME = req['name']
     EMAIL = req['email']
-    PWD = req['pwd']   
+    # PWD = req['pwd']   
     all_users.create_index("name", unique=True)
     try :
-        all_users.insert_one({"name" : NAME, "email" : EMAIL, "pwd" : PWD})
+        all_users.insert_one({"name" : NAME, "email" : EMAIL})
     except :
         return "Given NAME is already exist......" 
     return "Successfully Added...."

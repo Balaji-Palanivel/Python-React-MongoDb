@@ -34,22 +34,31 @@ def home_page():
 
 def sort_Asc():
     if filter_status == 'true':
-        return (sorted(filterd_1, key=lambda i: (i['name']),reverse=False))
-    elif filter_status == 'false':
+        return (sorted(filterd_1, key=lambda i: (i[request.args.get('sortby')]),reverse=False))
+    elif filter_status == 'false' and str(request.args.get('sortby')) == 'name':
         x = all_users.find().sort("name",1)
+        y = dumps(x) 
+        authors = json.loads(y)
+        return authors
+    elif filter_status == 'false' and str(request.args.get('sortby')) == 'email':
+        x = all_users.find().sort("email",1)
         y = dumps(x) 
         authors = json.loads(y)
         return authors
 
 def sort_Dsc():
     if filter_status == 'true':
-        return (sorted(filterd_1, key=lambda i: (i['name']),reverse=True))
-    elif filter_status == 'false':
+        return (sorted(filterd_1, key=lambda i: (i[request.args.get('sortby')]),reverse=True))
+    elif filter_status == 'false' and request.args.get('sortby') == 'name':
         x = all_users.find().sort("name",-1)
         y = dumps(x) 
         authors = json.loads(y)
         return authors
-
+    elif filter_status == 'false' and request.args.get('sortby') == 'email':
+        x = all_users.find().sort("email",-1)
+        y = dumps(x) 
+        authors = json.loads(y)
+        return authors
 def filter(name):
     global filterd_1,filter_status
     x = all_users.find()
@@ -62,10 +71,12 @@ def filter(name):
     a = dumps(z, indent = 2) 
     b = json.loads(a)
     filterd_1,filter_status = b, 'true'
-    if request.args.get('sort') == 'asc':
-      return (sorted(b, key=lambda i: (i['name']),reverse=False))
-    elif request.args.get('sort') == 'dsc':
-       return (sorted(b, key=lambda i: (i['name']),reverse=True))
+    return b
+    # if request.args.get('sort') == 'asc':
+    #     return (sorted(b, key=lambda i: (i[request.args.get('sortby')]),reverse=False))
+    # elif request.args.get('sort') == 'dsc':
+    #     return (sorted(b, key=lambda i: (i[request.args.get('sortby')]),reverse=True))
+
     
 
 @app.route("/add",methods=['GET','POST'])

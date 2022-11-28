@@ -12,6 +12,7 @@ export default class App extends Component {
       data1: [],
       URL: "http://127.0.0.1:5000/",
       sort_item: "asc",
+      sorting_field: '',
       filterd: false,
       add_page: true
 
@@ -30,16 +31,17 @@ export default class App extends Component {
       })
   }
   sorting_item(e) {
+    this.setState({sorting_field : e})
     if (this.state.sort_item == 'asc') {
-      this.api_call("http://127.0.0.1:5000/?sort=asc")
+      this.api_call("http://127.0.0.1:5000/?sort=asc&sortby=" + e)
       this.setState({ sort_item: 'dsc' })
     }
     if (this.state.sort_item == 'dsc') {
-      this.api_call("http://127.0.0.1:5000/?sort=dsc")
+      this.api_call("http://127.0.0.1:5000/?sort=dsc&sortby=" +e)
       this.setState({ sort_item: 'asc' })
     }
-
   }
+
   filtered_item(item) {
     if (item.length > 0) {
      if (this.state.sort_item == 'asc') {
@@ -59,6 +61,7 @@ export default class App extends Component {
       data: JSON.stringify({ name: document.getElementById('form4Example2').value, email: document.getElementById('form4Example4').value }),
       dataType: "json"
     });
+    
     window.location.reload();
   }
 
@@ -82,8 +85,8 @@ export default class App extends Component {
             <thead>
               <tr>
                 <td>S.No </td>
-                <td >Name <i onClick={e => this.sorting_item(e)} className="fa fa-fw fa-sort"></i> </td>
-                <td>Email </td>
+                <td >Name <i onClick={e => this.sorting_item('name')} className="fa fa-fw fa-sort"></i> </td>
+                <td>Email <i onClick={e => this.sorting_item('email')} className="fa fa-fw fa-sort"></i> </td>
               </tr>
             </thead>
             <tbody>{this.state.data1.map((x, index) =>

@@ -1,0 +1,11 @@
+FROM node:alpine
+
+WORKDIR /app
+COPY React/package.json /app
+
+RUN npm install
+COPY React/ .
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

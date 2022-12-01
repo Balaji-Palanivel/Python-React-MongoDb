@@ -1,0 +1,17 @@
+FROM python:3
+
+WORKDIR /app
+
+ENV FLASK_APP=base.py 
+
+ENV FLASK_ENV=development
+
+RUN pip install FLASK
+
+RUN pip install flask_pymongo
+
+COPY flask/ .
+
+EXPOSE 5000
+
+CMD ["python3" , "base.py"]

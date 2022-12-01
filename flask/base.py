@@ -92,8 +92,8 @@ def find_id():
         return "Given NAME is already exist......" 
     return "Successfully Added...."
 
-app.run(debug= True)
-
+if __name__ == "__main__":
+    app.run(port = 5000, debug = True) 
    
 
 # import pymongo
